@@ -68,7 +68,11 @@ class AntennasController < ApplicationController
     lat = params[:lat]
     antenna = Antenna.closest_to lng, lat
     distance = antenna.distance_to lng, lat
-    render json: { identifier: antenna.identifier, distance: distance }
+    render json: { identifier: antenna.identifier, name: antenna.name, distance: distance }
+  end
+
+  # GET /antennas/map
+  def map
   end
 
   private

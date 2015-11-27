@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :antennas
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -57,7 +56,8 @@ Rails.application.routes.draw do
 
   root 'antennas#index'
 
-  resources :antennas
+  get 'antennas/map', controller: 'antenna#map'
   post 'antennas/closest', controller: 'antenna#closest'
+  resources :antennas
 
 end

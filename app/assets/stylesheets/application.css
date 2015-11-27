@@ -28,9 +28,13 @@
 }
 
 .half-screen {
-  width: 50%;
+  width: 49%;
 }
 
 .half-screen.right {
   float: right;
+}
+
+.half-screen.left {
+  float: left;
 }

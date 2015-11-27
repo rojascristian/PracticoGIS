@@ -1,0 +1,88 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Estaciones Digitales Terrestres</h1>
+
+<div id="user-instructions">Edite las estaciones desde el listado, o bien clickee en algún punto del mapa para ver los datos de la estación más cercana al mismo.</div>
+
+<div class="half-screen left">
+  <div id="map"></div>
+</div>
+<div class="half-screen right">
+  <div>
+    <span id="text"></span>
+    <span id="link"></span>
+  </div>
+  <div id="details"></div>
+</div>
+
+<link rel="stylesheet" href="http://localhost:8080/geoserver/openlayers3/ol.css" type="text/css">
+<script>
+
+  // layers
+
+  var untiled = new ol.layer.Image({
+    source: new ol.source.ImageWMS({
+      ratio: 1,
+      url: 'http://localhost:8080/geoserver/PracticoGIS/wms',
+      params: { FORMAT: 'image/png', VERSION: '1.1.1', LAYERS: 'PracticoGIS:edt' }
+    })
+  });
+  var osm = new ol.layer.Tile({ source: new ol.source.OSM() });
+
+  // map
+
+  var source_projection_name = 'EPSG:4326';
+  var destination_projection_name = 'EPSG:3857'; // web mercator
+
+  var map = new ol.Map({
+    target: 'map',
+    layers: [
+      osm,
+      untiled
+    ],
+    view: new ol.View({
+      center: ol.proj.transform([0, 0], source_projection_name, destination_projection_name),
+      zoom: 6
+    })
+  });
+
+  // click handler
+
+  var lng_lat_from = function(some_event){
+    return ol.proj.transform(some_event.coordinate, destination_projection_name, source_projection_name);
+  };
+
+  map.on('click', function(e) {
+    var coords = lng_lat_from(e);
+    var lng = coords[0];
+    var lat = coords[1];
+    console.log("Lng: " + lng + " ; Lat: " + lat + " ;");
+    find_closest_antenna_to(lng, lat);
+  });
+
+  var find_closest_antenna_to = function(lng, lat){
+    $.ajax({
+      method: 'post',
+      url: '/antennas/closest',
+      data: { lng: lng, lat: lat },
+      success: function(result){
+        generate_message(result.identifier, result.name, result.distance);
+      }
+    });
+  }
+
+  var generate_message = function(identifier, name, distance){
+    var unit;
+    if(distance > 10000){
+      distance = distance / 1000;
+      unit = "kilómetros";
+    }else{
+      unit = "metros";
+    }
+    distance = Math.round(distance);
+    var message = "La estación más cercana es la correspondiente a '" + name + "', ubicada a " + distance + " " + unit + " del punto seleccionado.";
+    $("#text").text(message);
+    $("#link").html("<a href='/antennas#" + identifier + "'>Ver en el listado</a>");
+  }
+
+</script>
