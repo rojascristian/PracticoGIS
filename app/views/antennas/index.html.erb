@@ -1,0 +1,98 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Estaciones Digitales Terrestres</h1>
+
+<div class="half-screen right" id="map"></div>
+
+<table class="half-screen left">
+  <thead>
+    <tr>
+      <!-- <th colspan="3"></th> -->
+      <th>Sitio</th>
+      <th>Provincia</th>
+      <th>Localidad</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @antennas.each do |antenna| %>
+      <tr class="antenna" id="<%= antenna.identifier %>" >
+        <td><%= antenna.name %></td>
+        <td><%= antenna.province %></td>
+        <td><%= antenna.location %></td>
+        <td><%= link_to 'Show', antenna %></td>
+        <td><%= link_to 'Edit', edit_antenna_path(antenna) %></td>
+        <td><%= link_to 'Destroy', antenna, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Antenna', new_antenna_path %>
+
+<link rel="stylesheet" href="http://localhost:8080/geoserver/openlayers3/ol.css" type="text/css">
+<script src="http://localhost:8080/geoserver/openlayers3/ol.js" type="text/javascript"></script>
+<script>
+
+  // layers
+
+  var untiled = new ol.layer.Image({
+    source: new ol.source.ImageWMS({
+      ratio: 1,
+      url: 'http://localhost:8080/geoserver/PracticoGIS/wms',
+      params: { FORMAT: 'image/png', VERSION: '1.1.1', LAYERS: 'PracticoGIS:edt' }
+    })
+  });
+  var osm = new ol.layer.Tile({ source: new ol.source.OSM() });
+
+  // map
+
+  var source_projection_name = 'EPSG:4326';
+  var destination_projection_name = 'EPSG:3857'; // web mercator
+
+  var map = new ol.Map({
+    target: 'map',
+    layers: [
+      osm,
+      untiled
+    ],
+    view: new ol.View({
+      center: ol.proj.transform([0, 0], source_projection_name, destination_projection_name),
+      zoom: 6
+    })
+  });
+
+  // click handler
+
+  var lng_lat_from = function(some_event){
+    return ol.proj.transform(some_event.coordinate, destination_projection_name, source_projection_name);
+  };
+
+  map.on('click', function(e) {
+    var coords = lng_lat_from(e);
+    var lng = coords[0];
+    var lat = coords[1];
+    console.log("Lng: " + lng + " ; Lat: " + lat + " ;");
+    find_closest_antenna_to(lng, lat);
+  });
+
+  var find_closest_antenna_to = function(lng, lat){
+    $.ajax({
+      method: 'post',
+      url: '/antennas/closest',
+      data: { lng: lng, lat: lat },
+      success: function(result){
+        select_antenna(result.identifier);
+      }
+    });
+  }
+
+  var select_antenna = function(identifier){
+    $(".antenna").removeClass("selected");
+    $(".antenna#" + identifier).addClass("selected");
+  }
+
+</script>

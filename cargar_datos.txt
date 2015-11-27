@@ -1,0 +1,2 @@
+Desde el usuario postgres hacer:
+shp2pgsql -s EPSG:4326 -W LATIN1  EDT/EDT.shp | psql -d PracticoGIS
