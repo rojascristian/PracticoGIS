@@ -15,7 +15,6 @@
   <div id="details"></div>
 </div>
 
-<link rel="stylesheet" href="http://localhost:8080/geoserver/openlayers3/ol.css" type="text/css">
 <script>
 
   // layers
@@ -41,7 +40,7 @@
       untiled
     ],
     view: new ol.View({
-      center: ol.proj.transform([0, 0], source_projection_name, destination_projection_name),
+      center: ol.proj.transform([-58.53, -34.67], source_projection_name, destination_projection_name),
       zoom: 6
     })
   });
@@ -74,9 +73,11 @@
   var generate_message = function(identifier, name, distance){
     var unit;
     if(distance > 10000){
+      $("#details").text("Distancia exacta al punto seleccionado: " + Math.round(distance) + " metros.");
       distance = distance / 1000;
       unit = "kilómetros";
     }else{
+      $("#details").text("");
       unit = "metros";
     }
     distance = Math.round(distance);

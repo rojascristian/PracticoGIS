@@ -37,12 +37,12 @@
           </td>
         </tr>
         <tr>
-          <td>Latitud</td>
-          <td><%= f.text_field :latitude %></td>
-        </tr>
-        <tr>
           <td>Longitud</td>
           <td><%= f.text_field :longitude %></td>
+        </tr>
+        <tr>
+          <td>Latitud</td>
+          <td><%= f.text_field :latitude %></td>
         </tr>
       </tbody>
     </table>
@@ -56,3 +56,50 @@
     <div id="map"></div>
   </div>
 <% end %>
+
+<script>
+
+  // layers
+
+  var untiled = new ol.layer.Image({
+    source: new ol.source.ImageWMS({
+      ratio: 1,
+      url: 'http://localhost:8080/geoserver/PracticoGIS/wms',
+      params: { FORMAT: 'image/png', VERSION: '1.1.1', LAYERS: 'PracticoGIS:edt' }
+    })
+  });
+  var osm = new ol.layer.Tile({ source: new ol.source.OSM() });
+
+  // map
+
+  var source_projection_name = 'EPSG:4326';
+  var destination_projection_name = 'EPSG:3857'; // web mercator
+
+  var map = new ol.Map({
+    target: 'map',
+    layers: [
+      osm,
+      untiled
+    ],
+    view: new ol.View({
+      center: ol.proj.transform([-58.53, -34.67], source_projection_name, destination_projection_name),
+      zoom: 6
+    })
+  });
+
+  // click handler
+
+  var lng_lat_from = function(some_event){
+    return ol.proj.transform(some_event.coordinate, destination_projection_name, source_projection_name);
+  };
+
+  map.on('click', function(e) {
+    var coords = lng_lat_from(e);
+    var lng = coords[0];
+    var lat = coords[1];
+    console.log("Lng: " + lng + " ; Lat: " + lat + " ;");
+    $("#antenna_longitude").val(lng);
+    $("#antenna_latitude").val(lat);
+  });
+
+</script>
