@@ -55,6 +55,8 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
 
+  root 'antennas#index'
+
   resources :antennas
   post 'antennas/closest', controller: 'antenna#closest'
 

@@ -14,6 +14,11 @@
  *= require_self
  */
 
+#user-instructions {
+  font-size: 18px;
+  padding-bottom: 20px;
+}
+
 .antenna.selected {
   background: #C3E1F9;
 }

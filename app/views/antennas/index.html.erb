@@ -2,7 +2,18 @@
 
 <h1>Estaciones Digitales Terrestres</h1>
 
-<div class="half-screen right" id="map"></div>
+<div id="user-instructions">Edite las estaciones desde el listado, o bien clickee en algún punto del mapa para ver los datos de la estación más cercana al mismo.</div>
+
+<div class="half-screen right">
+  <div id="map"></div>
+  <div>
+    <div>
+      <span id="text"></span>
+      <span id="link"></span>
+    </div>
+    <div id="details"></div>
+  </div>
+</div>
 
 <table class="half-screen left">
   <thead>
@@ -18,7 +29,7 @@
   <tbody>
     <% @antennas.each do |antenna| %>
       <tr class="antenna" id="<%= antenna.identifier %>" >
-        <td><%= antenna.name %></td>
+        <td class="name"><%= antenna.name %></td>
         <td><%= antenna.province %></td>
         <td><%= antenna.location %></td>
         <td><%= link_to 'Show', antenna %></td>
@@ -86,6 +97,7 @@
       data: { lng: lng, lat: lat },
       success: function(result){
         select_antenna(result.identifier);
+        generate_message(result.identifier, result.distance);
       }
     });
   }
@@ -93,6 +105,21 @@
   var select_antenna = function(identifier){
     $(".antenna").removeClass("selected");
     $(".antenna#" + identifier).addClass("selected");
+  }
+
+  var generate_message = function(identifier, distance){
+    var antenna_name = $(".antenna#" + identifier + " .name").text();
+    var unit;
+    if(distance > 10000){
+      distance = distance / 1000;
+      unit = "kilómetros";
+    }else{
+      unit = "metros";
+    }
+    distance = Math.round(distance);
+    var message = "La estación más cercana es la correspondiente a '" + antenna_name + "', ubicada a " + distance + " " + unit + " del punto seleccionado.";
+    $("#text").text(message);
+    $("#link").html("<a href='#" + identifier + "'>Ver en el listado</a>");
   }
 
 </script>
