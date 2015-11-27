@@ -38,3 +38,15 @@
 .half-screen.left {
   float: left;
 }
+
+.antenna-field {
+  padding-bottom: 5px;
+}
+
+.all-inline * {
+  display: inline-block;
+}
+
+h1 {
+  padding-right: 20px;
+}

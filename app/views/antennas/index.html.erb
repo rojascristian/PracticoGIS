@@ -23,9 +23,9 @@ Edite las estaciones desde el listado, o bien pase al <%= link_to 'mapa', antenn
         <td class="name"><%= antenna.name %></td>
         <td><%= antenna.province %></td>
         <td><%= antenna.location %></td>
-        <td><%= link_to 'Show', antenna %></td>
-        <td><%= link_to 'Edit', edit_antenna_path(antenna) %></td>
-        <td><%= link_to 'Destroy', antenna, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Ver en el mapa', antenna %></td>
+        <td><%= link_to 'Editar', edit_antenna_path(antenna) %></td>
+        <td><%= link_to 'Eliminar', antenna, method: :delete, data: { confirm: '¿Está seguro de que desea eliminar la estación?' } %></td>
       </tr>
     <% end %>
   </tbody>

@@ -11,6 +11,8 @@ class Antenna < ActiveRecord::Base
   alias_attribute :latitude, :latitud
   alias_attribute :longitude, :longitud
 
+  alias_attribute :height, :altura_snm
+
   def self.closest_to lng, lat
     order("ST_Distance(geom, ST_GeomFromText('POINT(#{lng} #{lat})', 4326)) ASC").first
   end
