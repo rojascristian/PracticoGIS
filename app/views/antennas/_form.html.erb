@@ -59,6 +59,15 @@
 
 <script>
 
+  // form
+
+  var get_longitude = function(){
+    return parseFloat($("#antenna_longitude").val());
+  }
+  var get_latitude = function(){
+    return parseFloat($("#antenna_latitude").val());
+  }
+
   // layers
 
   var untiled = new ol.layer.Image({
@@ -82,8 +91,12 @@
       untiled
     ],
     view: new ol.View({
-      center: ol.proj.transform([-58.53, -34.67], source_projection_name, destination_projection_name),
-      zoom: 6
+      center: ol.proj.transform(
+        [
+          (isNaN(get_longitude()) ? -58.53 : get_longitude()),
+          (isNaN(get_latitude()) ? -34.67 : get_latitude())
+        ], source_projection_name, destination_projection_name),
+      zoom: isNaN(get_longitude()) ? 4 : 12
     })
   });
 
@@ -93,13 +106,32 @@
     return ol.proj.transform(some_event.coordinate, destination_projection_name, source_projection_name);
   };
 
+  var marker = null;
+
   map.on('click', function(e) {
     var coords = lng_lat_from(e);
     var lng = coords[0];
     var lat = coords[1];
     console.log("Lng: " + lng + " ; Lat: " + lat + " ;");
+    create_marker_for(lng, lat);
     $("#antenna_longitude").val(lng);
     $("#antenna_latitude").val(lat);
   });
+
+  var create_marker_for = function(lng, lat){
+    if(marker != null) map.removeOverlay(marker);
+    marker = new ol.Overlay({
+      position: ol.proj.transform([lng, lat], source_projection_name, destination_projection_name),
+      element: $('<img src="<%= image_url "marker.png" %>">'),
+      offset: [-18, -35]
+    });
+    map.addOverlay(marker);
+  }
+
+  if($("#antenna_longitude").val().length > 0){
+    var lng = $("#antenna_longitude").val();
+    var lat = $("#antenna_latitude").val();
+    create_marker_for(lng, lat);
+  }
 
 </script>
