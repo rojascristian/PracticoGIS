@@ -50,3 +50,7 @@
 h1 {
   padding-right: 20px;
 }
+
+tr {
+  text-align: left;
+}
