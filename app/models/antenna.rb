@@ -13,6 +13,12 @@ class Antenna < ActiveRecord::Base
 
   alias_attribute :height, :altura_snm
 
+  validates :name, presence: true
+  validates :province, presence: true
+  validates :location, presence: true
+  validates :latitude, presence: true
+  validates :longitude, presence: true
+
   def self.closest_to lng, lat
     order("ST_Distance(geom, ST_GeomFromText('POINT(#{lng} #{lat})', 4326)) ASC").first
   end

@@ -1,4 +1,111 @@
 <p id="notice"><%= notice %></p>
 
-<%= link_to 'Edit', edit_antenna_path(@antenna) %> |
-<%= link_to 'Back', antennas_path %>
+<div class="all-inline">
+  <h1>Editar Estación</h1>
+  <%= link_to 'Editar', edit_antenna_path(@antenna) %> |
+  <%= link_to 'Volver al listado', antennas_path %>
+</div>
+
+  <div class="half-screen left">
+    <table>
+      <tbody>
+        <tr>
+          <td>Sitio / Nombre</td>
+          <td><%= @antenna.name %></td>
+        </tr>
+        <tr>
+          <td>Provincia</td>
+          <td><%= @antenna.province %></td>
+        </tr>
+        <tr>
+          <td>Localidad</td>
+          <td><%= @antenna.location %></td>
+        </tr>
+        <tr>
+          <td>Altura SNM</td>
+          <td><%= @antenna.height %></td>
+        </tr>
+        <tr>
+          <td>Longitud</td>
+          <td id="antenna_longitude"><%= @antenna.longitude %></td>
+        </tr>
+        <tr>
+          <td>Latitud</td>
+          <td id="antenna_latitude"><%= @antenna.latitude %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="half-screen right">
+    <div id="map"></div>
+  </div>
+
+<script>
+
+  // form
+
+  var get_longitude = function(){
+    return parseFloat($("#antenna_longitude").text());
+  }
+  var get_latitude = function(){
+    return parseFloat($("#antenna_latitude").text());
+  }
+
+  // layers
+
+  var untiled = new ol.layer.Image({
+    source: new ol.source.ImageWMS({
+      ratio: 1,
+      url: 'http://localhost:8080/geoserver/PracticoGIS/wms',
+      params: { FORMAT: 'image/png', VERSION: '1.1.1', LAYERS: 'PracticoGIS:edt' }
+    })
+  });
+  var osm = new ol.layer.Tile({ source: new ol.source.OSM() });
+
+  // map
+
+  var source_projection_name = 'EPSG:4326';
+  var destination_projection_name = 'EPSG:3857'; // web mercator
+
+  var map = new ol.Map({
+    target: 'map',
+    layers: [
+      osm,
+      untiled
+    ],
+    view: new ol.View({
+      center: ol.proj.transform(
+        [
+          (isNaN(get_longitude()) ? -58.53 : get_longitude()),
+          (isNaN(get_latitude()) ? -34.67 : get_latitude())
+        ], source_projection_name, destination_projection_name),
+      zoom: isNaN(get_longitude()) ? 4 : 12
+    })
+  });
+
+  // click handler
+
+  var lng_lat_from = function(some_event){
+    return ol.proj.transform(some_event.coordinate, destination_projection_name, source_projection_name);
+  };
+
+  var marker = null;
+
+  var create_marker_for = function(lng, lat){
+    if(marker != null) map.removeOverlay(marker);
+    marker = new ol.Overlay({
+      position: ol.proj.transform([lng, lat], source_projection_name, destination_projection_name),
+      element: $('<img src="<%= image_url "marker.png" %>">'),
+      offset: [-17, -35]
+    });
+    map.addOverlay(marker);
+  }
+
+  if(!isNaN(get_longitude())){
+    var lng = get_longitude();
+    var lat = get_latitude();
+    create_marker_for(lng, lat);
+  }
+
+</script>

@@ -123,14 +123,14 @@
     marker = new ol.Overlay({
       position: ol.proj.transform([lng, lat], source_projection_name, destination_projection_name),
       element: $('<img src="<%= image_url "marker.png" %>">'),
-      offset: [-18, -35]
+      offset: [-17, -35]
     });
     map.addOverlay(marker);
   }
 
-  if($("#antenna_longitude").val().length > 0){
-    var lng = $("#antenna_longitude").val();
-    var lat = $("#antenna_latitude").val();
+  if(!isNaN(get_longitude())){
+    var lng = get_longitude();
+    var lat = get_latitude();
     create_marker_for(lng, lat);
   }
 

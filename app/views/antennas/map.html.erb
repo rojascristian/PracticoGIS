@@ -2,7 +2,10 @@
 
 <h1>Estaciones Digitales Terrestres</h1>
 
-<div id="user-instructions">Edite las estaciones desde el listado, o bien clickee en algún punto del mapa para ver los datos de la estación más cercana al mismo.</div>
+<div id="user-instructions">
+Clickee en algún punto del mapa para ver los datos de la estación más cercana al mismo.
+También puede volver al <%= link_to 'listado de estaciones', antennas_url %>.
+</div>
 
 <div class="half-screen left">
   <div id="map"></div>
@@ -57,7 +60,20 @@
     var lat = coords[1];
     console.log("Lng: " + lng + " ; Lat: " + lat + " ;");
     find_closest_antenna_to(lng, lat);
+    create_marker_for(lng, lat);
   });
+
+  var marker = null;
+
+  var create_marker_for = function(lng, lat){
+    if(marker != null) map.removeOverlay(marker);
+    marker = new ol.Overlay({
+      position: ol.proj.transform([lng, lat], source_projection_name, destination_projection_name),
+      element: $('<img src="<%= image_url "marker.png" %>">'),
+      offset: [-17, -35]
+    });
+    map.addOverlay(marker);
+  }
 
   var find_closest_antenna_to = function(lng, lat){
     $.ajax({
