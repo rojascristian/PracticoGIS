@@ -24,7 +24,7 @@ class AntennasController < ApplicationController
   # POST /antennas
   # POST /antennas.json
   def create
-    @antenna = Antenna.new(antenna_params)
+    @antenna = Antenna.new antenna_params.permit(:name, :province, :location, :height, :latitude, :longitude)
 
     respond_to do |format|
       if @antenna.save
@@ -41,7 +41,7 @@ class AntennasController < ApplicationController
   # PATCH/PUT /antennas/1.json
   def update
     respond_to do |format|
-      if @antenna.update(antenna_params)
+      if @antenna.update antenna_params.permit(:name, :province, :location, :height, :latitude, :longitude)
         format.html { redirect_to @antenna, notice: 'Antenna was successfully updated.' }
         format.json { render :show, status: :ok, location: @antenna }
       else

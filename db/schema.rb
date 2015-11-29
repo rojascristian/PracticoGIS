@@ -17,23 +17,15 @@ ActiveRecord::Schema.define(version: 0) do
   enable_extension "plpgsql"
   enable_extension "postgis"
 
-  create_table "edt", id: false, :force => true do |t|
-    t.integer "gid"
-    t.integer  "id"
-    t.string   "provincia"
-    t.string   "localidad"
-    t.decimal  "latitud", :precision => 15, :scale => 10
-    t.decimal  "longitud", :precision => 15, :scale => 10
+  create_table "edt", primary_key: "gid", force: :cascade do |t|
+    t.decimal  "id"
+    t.string   "provincia",  limit: 254
+    t.string   "localidad",  limit: 254
+    t.decimal  "latitud"
+    t.decimal  "longitud"
     t.decimal  "altura_snm"
-    t.string   "sitio"
-    # t.spatial  "geom", :limit => { :srid => 4326, :type => "geometry", :geographic => true }
-    t.geometry "geom", :srid => 4326
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.primary_key "gid"
+    t.string   "sitio",      limit: 254
+    t.geometry "geom",       limit: {:srid=>4326, :type=>"point"}
   end
-
-# Could not dump table "edt" because of following StandardError
-#   Unknown type 'geometry(Point,4326)' for column 'geom'
 
 end
