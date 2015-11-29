@@ -54,3 +54,7 @@ h1 {
 tr {
   text-align: left;
 }
+
+a:link, a:visited {
+  color: #0A5CC0;
+}
